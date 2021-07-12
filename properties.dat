@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<java version="1.8.0_292" class="java.beans.XMLDecoder">
+ <object class="de.gandalf1783.tilegame.objects.Properties">
+  <void property="uuid">
+   <string>cdef3936-cb51-490a-8aa5-682b36e1172f</string>
+  </void>
+ </object>
+</java>
