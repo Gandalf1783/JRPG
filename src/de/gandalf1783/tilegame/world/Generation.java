@@ -27,7 +27,6 @@ public class Generation {
 
         for(int x = 0; x < valuesStep1.length; x++) {
             for(int y = 0; y < valuesStep1.length; y++) {
-
                 if(valuesStep2[x][y] != 0) {
                     finalArray[x][y] = valuesStep2[x][y];
                 } else {
@@ -50,15 +49,14 @@ public class Generation {
 
         for(int x = 0; x < values.length; x++) {
             for(int y = 0; y < values.length; y++) {
-
                 if(values[x][y] > 0.7) {
                     output[x][y] = 6; // Water
+
                 } else if(values[x][y] > 0.6) {
                     output[x][y] = 3; // Sand
                 } else {
-                    output[x][y] = 0; // Grass
+                    output[x][y] = 200; // Grawss
                 }
-
             }
         }
 
@@ -74,12 +72,11 @@ public class Generation {
 
         for(int x = 0; x < values.length; x++) {
             for(int y = 0; y < values.length; y++) {
-
                 if(values[x][y] > 0.8) {
                     output[x][y] = 5; // Ocean (DeepWaterTile)
-                } else if(values[x][y] > 0.79) {
+                } else if(values[x][y] > 0.78) {
                     output[x][y] = 6; // Water
-                } else if(values[x][y] > 0.78){
+                } else if(values[x][y] > 0.76){
                     output[x][y] = 3; // Sand
                 } else {
                     output[x][y] = 0;

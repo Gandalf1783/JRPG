@@ -38,6 +38,8 @@ public class Listener extends com.esotericsoftware.kryonet.Listener {
 
         new EntitiesUpdateExecutor("ENTITY_UPDATE");
 
+        new EntityAddExecutor("ENTITYADD");
+
         new LoadExecutor("LOAD");
         new SaveExecutor("SAVE");
         new ShutdownExecutor("SHUTDOWN");
@@ -136,11 +138,13 @@ public class Listener extends com.esotericsoftware.kryonet.Listener {
 
             // TODO: Add Items that are on the Ground
 
-        } else {
-            System.out.println("Received a Package with class "+o.getClass()+" | "+o.getClass().getName());
-
         }
 
+
+    }
+
+    @Override
+    public void connected(Connection connection) {
 
     }
 

@@ -19,4 +19,5 @@ public class CurrentPlayerExecutor extends BasicResponseExecutor {
         MultiplayerGameState.currentPlayers = current_players;
         DiscordPresence.updateMultiplayerNumbers(MultiplayerGameState.currentPlayers, MultiplayerGameState.maxPlayers);
     }
+
 }

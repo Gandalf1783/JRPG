@@ -3,6 +3,7 @@ package de.gandalf1783.tilegame;
 import de.gandalf1783.tilegame.gfx.GameCamera;
 import de.gandalf1783.tilegame.input.KeyManager;
 import de.gandalf1783.tilegame.input.MouseManager;
+import de.gandalf1783.tilegame.ui.UIManager;
 import de.gandalf1783.tilegame.world.World;
 
 
@@ -26,7 +27,7 @@ public class Handler {
 	public MouseManager getMouseManager(){
 		return game.getMouseManager();
 	}
-	
+
 	public int getWidth(){
 		return game.getWidth();
 	}

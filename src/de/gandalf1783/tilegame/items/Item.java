@@ -71,6 +71,10 @@ public class Item {
 		g.drawImage(texture, x, y, ITEMWIDTH, ITEMHEIGHT, null);
 	}
 
+	public void render(Graphics g, int x, int y, int w, int h){
+		g.drawImage(texture, x, y, w, h, null);
+	}
+
 	public Item createNew(int count){
 		Item i = new Item(texture, name, id, UUID.randomUUID());
 		i.setPickedUp(false);

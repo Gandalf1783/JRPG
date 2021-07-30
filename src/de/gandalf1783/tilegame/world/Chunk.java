@@ -7,7 +7,7 @@ import java.io.Serializable;
 public class Chunk implements Serializable {
 
     // Y is UP/DOWN!   x y z            x  y  z
-    private int blocks[][][] = new int[16][3][16];
+    private int[][][] blocks = new int[16][3][16];
     private int chunkX, chunkY;
     private Rectangle rect;
 
@@ -43,7 +43,7 @@ public class Chunk implements Serializable {
     }
 
     public Rectangle getRect() {
-        rect = new de.gandalf1783.quadtree.Rectangle(chunkX*16,chunkY*16, (chunkX+1)*16, (chunkY+1)*16);
+        rect = new de.gandalf1783.quadtree.Rectangle(chunkX*16*53,chunkY*16*53, (chunkX+1)*16*53, (chunkY+1)*16*53);
         return rect;
     }
 

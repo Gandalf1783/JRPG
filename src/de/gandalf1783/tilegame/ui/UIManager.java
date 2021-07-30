@@ -3,6 +3,7 @@ package de.gandalf1783.tilegame.ui;
 import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 
 import de.gandalf1783.tilegame.Handler;
 
@@ -13,27 +14,39 @@ public class UIManager {
 	
 	public UIManager(Handler handler){
 		this.handler = handler;
-		objects = new ArrayList<UIObject>();
+		objects = new ArrayList<>();
 	}
 	
 	public void tick(){
-		for(UIObject o : objects)
-			o.tick();
+		try {
+			for(UIObject o : objects)
+				o.tick();
+		} catch (ConcurrentModificationException ex) {
+		}
 	}
 	
 	public void render(Graphics g){
-		for(UIObject o : objects)
-			o.render(g);
+		try {
+			for(UIObject o : objects)
+				o.render(g);
+		} catch (ConcurrentModificationException ex) {
+		}
 	}
 	
 	public void onMouseMove(MouseEvent e){
-		for(UIObject o : objects)
-			o.onMouseMove(e);
+		try {
+			for(UIObject o : objects)
+				o.onMouseMove(e);
+		} catch (ConcurrentModificationException ex) {
+		}
 	}
 	
 	public void onMouseRelease(MouseEvent e){
-		for(UIObject o : objects)
-			o.onMouseRelease(e);
+		try {
+			for(UIObject o : objects)
+				o.onMouseRelease(e);
+		} catch (ConcurrentModificationException ex) {
+		}
 	}
 	
 	public void addObject(UIObject o){

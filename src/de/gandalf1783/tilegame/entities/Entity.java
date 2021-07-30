@@ -6,12 +6,18 @@ import java.util.Iterator;
 import java.util.Map;
 
 import de.gandalf1783.tilegame.Handler;
+import de.gandalf1783.tilegame.entities.statics.Cactus;
 import de.gandalf1783.tilegame.states.MultiplayerGameState;
 
 public abstract class Entity {
 
 	public static final int DEFAULT_HEALTH = 3;
 
+	public static Class[] entityClasses = new Class[256];
+
+	public static Class getEntityClassByID(int EID) {
+		return entityClasses[EID];
+	}
 
 	protected Handler handler;
 	protected float x, y;

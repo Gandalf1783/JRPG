@@ -10,6 +10,7 @@ public abstract class UIObject {
 	protected int width, height;
 	protected Rectangle bounds;
 	protected boolean hovering = false;
+	protected boolean enableHover = true;
 	
 	public UIObject(float x, float y, int width, int height){
 		this.x = x;
@@ -17,6 +18,15 @@ public abstract class UIObject {
 		this.width = width;
 		this.height = height;
 		bounds = new Rectangle((int) x, (int) y, width, height);
+	}
+
+	public UIObject(float x, float y, int width, int height, boolean enableHover){
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		bounds = new Rectangle((int) x, (int) y, width, height);
+		this.enableHover = enableHover;
 	}
 	
 	public abstract void tick();

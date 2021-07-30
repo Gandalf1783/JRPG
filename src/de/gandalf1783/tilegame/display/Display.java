@@ -1,9 +1,11 @@
 package de.gandalf1783.tilegame.display;
 
-import java.awt.Canvas;
-import java.awt.Dimension;
+import de.gandalf1783.tilegame.gfx.Assets;
+
+import java.awt.*;
 
 import javax.swing.JFrame;
+import javax.tools.Tool;
 
 public class Display {
 
@@ -37,6 +39,9 @@ public class Display {
 		
 		frame.add(canvas);
 		frame.pack();
+
+		frame.setCursor(Toolkit.getDefaultToolkit().createCustomCursor(Assets.mouse, new Point(0,0), "custom_cursor"));
+
 	}
 
 	public Canvas getCanvas(){

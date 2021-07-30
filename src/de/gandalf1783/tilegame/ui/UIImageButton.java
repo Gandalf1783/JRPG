@@ -14,15 +14,28 @@ public class UIImageButton extends UIObject {
 		this.clicker = clicker;
 	}
 
+	public UIImageButton(float x, float y, int width, int height, BufferedImage image, ClickListener clicker, boolean enableHover) {
+		super(x, y, width, height);
+		this.images = new BufferedImage[1];
+		this.images[0] = image;
+		this.clicker = clicker;
+		this.enableHover = enableHover;
+	}
+
 	@Override
 	public void tick() {}
 
 	@Override
 	public void render(Graphics g) {
-		if(hovering)
-			g.drawImage(images[1], (int) x, (int) y, width, height, null);
-		else
+		if(enableHover) {
+			if(hovering)
+				g.drawImage(images[1], (int) x, (int) y, width, height, null);
+			else
+				g.drawImage(images[0], (int) x, (int) y, width, height, null);
+		} else {
 			g.drawImage(images[0], (int) x, (int) y, width, height, null);
+		}
+
 	}
 
 	@Override

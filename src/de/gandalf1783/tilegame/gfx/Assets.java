@@ -14,6 +14,9 @@ public class Assets {
 	
 	public static final String ASSETS_VERSION = "ASSETS_1.2.1";
 
+	public static BufferedImage emptyImage;
+	public static BufferedImage[] emptyImages;
+
 	public static BufferedImage[] player_down, player_up, player_left, player_right;
 	public static BufferedImage[] player_attackDown, player_attackUp, player_attackLeft, player_attackRight;
 	public static BufferedImage[] remoteplayer_down, remoteplayer_up, remoteplayer_left, remoteplayer_right;
@@ -24,7 +27,7 @@ public class Assets {
 	public static BufferedImage[] saveAnim;
 	public static BufferedImage[] cactus, stones1;
 	public static BufferedImage player_stand, remoteplayer_stand;
-	public static BufferedImage inventoryScreen;
+	public static BufferedImage inventoryScreen, inventoryActiveTab, inventoryActiveItem;
 	public static BufferedImage saveIcon;
 	public static BufferedImage dirt, grass, grass1, stone, sand, tree, rock, cobblestone;
 	public static BufferedImage sand38, sand39, sand40, sand41, sand42, sand43, sand44, sand45;
@@ -38,6 +41,8 @@ public class Assets {
 	public static BufferedImage plank91, plank92, plank93, plank94, plank95, plank96, plank97, plank98, plank99, plank100, plank101;
 	public static BufferedImage sign201, sign202, sign203, sign204;
 	public static BufferedImage[] loadingAnim, offlineAnim, shutdownAnim;
+
+	public static Image mouse;
 
 	// Cave
 	public static BufferedImage[] lavaAnim301;
@@ -56,16 +61,23 @@ public class Assets {
 		SpriteSheet cave = new SpriteSheet(ImageLoader.loadImage("/textures/cave.png"));
 		SpriteSheet offline = new SpriteSheet(ImageLoader.loadImage("/textures/offline.png"));
 		SpriteSheet shutdown = new SpriteSheet(ImageLoader.loadImage("/textures/shutdown.png"));
-
-
-
+		SpriteSheet ui = new SpriteSheet(ImageLoader.loadImage("/textures/ui_split.png"));
 
 		font50 = FontLoader.loadFont("/fonts/slkscr.ttf", 50);
 		font28 = FontLoader.loadFont("/fonts/slkscr.ttf", 28);
 		font15 = FontLoader.loadFont("/fonts/slkscr.ttf", 15);
 		font23 = FontLoader.loadFont("/fonts/slkscr.ttf", 23);
 
-		inventoryScreen = ImageLoader.loadImage("/textures/inventoryScreen.png");
+		emptyImage = loadingAnimation.crop(0,0,1,1);
+		emptyImages = new BufferedImage[2];
+		emptyImages[0] = emptyImage;
+		emptyImages[1] = emptyImage;
+
+		inventoryScreen = ui.crop(5,99, 120, 137);
+		inventoryActiveTab = ui.crop(128,101,17,18);
+		inventoryActiveItem = ui.crop(127,125,14,14);
+
+		mouse = ui.crop(204,31,8,8);
 
 		//Loading Image:
 		loadingAnim = new BufferedImage[7];

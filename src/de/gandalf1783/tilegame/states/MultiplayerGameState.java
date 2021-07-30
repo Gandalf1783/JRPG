@@ -49,7 +49,10 @@ public class MultiplayerGameState extends State {
     private int saveCount = 0, loadCount = 0;
     private static int dimensionID;
 
-    private static String IP_ADDR = "localhost";
+    private static String IP_ADDR = "8.tcp.ngrok.io";
+    private static int PORT = 16696;
+    private static int PORT_UDP = -1;
+
 
     public static int currentPlayers, maxPlayers;
 
@@ -58,18 +61,25 @@ public class MultiplayerGameState extends State {
     private void init() {
         try {
             loadUUID();
+            if(p !=  null) {
+                System.out.println("INIT: "+p.getUuid());
+            }
             if(p == null) {
+                System.out.println("GENERATING UUID");
                 uuid = UUID.randomUUID();
                 p = new Properties();
                 p.setUuid(uuid.toString());
+                System.out.println(uuid);
                 saveUUID();
             }
+            System.out.println("AFTER LOAD:"+p.getUuid());
 
             maxPlayers = 10;
             currentPlayers = 1;
 
             client = new Client(65536, 32768);
             client.start();
+
             kryo = client.getKryo();
 
             //Register classes for kryonet
@@ -86,7 +96,8 @@ public class MultiplayerGameState extends State {
             kryo.register(int[].class);
 
 
-            client.connect(5000, IP_ADDR, 54555, 54777);
+            client.connect(5000, IP_ADDR, PORT, PORT_UDP);
+
             client.addListener(new Listener(handler));
             DiscordPresence.init();
 
@@ -97,7 +108,8 @@ public class MultiplayerGameState extends State {
             BasicRequest request = new BasicRequest();
 
             request.text = "LOGIN?";
-            request.data = uuid.toString();
+            request.data = p.getUuid();
+            System.out.println("request.data: "+request.data);
             client.sendTCP(request);
 
             System.out.println("[INFO] Loading World");
@@ -223,18 +235,13 @@ public class MultiplayerGameState extends State {
                 Text.drawString(g, "FPS :"+ Game.getFPS()+"/60", 10, 84,false, Color.white, Assets.font15);
                 Text.drawString(g, "Dimension: "+getDimensionID(), 10,96,false, Color.white, Assets.font15);
                 Text.drawString(g, "Connected: "+(!offline), 10,108,false, Color.white, Assets.font15);
-                Text.drawString(g, "Selected Inv. Slot: "+world.getEntityManager().getPlayer().getInventory().getSelectedIndex(), 10, 120, false, Color.white, Assets.font15);
-
-                if(world.getEntityManager().getPlayer().getInventory().getInvSize() != 0) {
-                    String item = world.getEntityManager().getPlayer().getInventory().getSelectedItem().getName();
-                    Text.drawString(g, "Selected Item: "+item, 10, 132, false, Color.WHITE, Assets.font15);
-                }
 
                 Text.drawString(g, "Number of Items: "+world.getItemManager().getItems().size(), 10,144, false, Color.white, Assets.font15);
                 Text.drawString(g, "Number of Entities: "+world.getEntityManager().getEntities().size(), 10, 156, false, Color.WHITE, Assets.font15);
                 Text.drawString(g, "Server / Ping: "+NETWORK_IP+" @ "+NETWORK_PING+"ms", 10, 168, false, Color.WHITE, Assets.font15);
 
-                Text.drawString(g, "Chunk: "+chunkX+" / "+chunkY, 10, 192, false, Color.WHITE, Assets.font15);
+                Text.drawString(g, "Chunk: "+chunkX+" / "+chunkY+" ("+World.playerChunkX+"|"+World.playerChunkY+")", 10, 192, false, Color.WHITE, Assets.font15);
+                Text.drawString(g, "Rendered Chunks: "+World.chunksRendered, 10, 204, false, Color.WHITE, Assets.font15);
 
                 Color c = g.getColor();
                 g.setColor(Color.CYAN);
@@ -298,7 +305,9 @@ public class MultiplayerGameState extends State {
             System.out.println("Loading...: " + path);
             Properties p1 = (Properties) xml.readObject();
             p = p1;
+            System.out.println("BEFORE LOAD"+p.getUuid());
             uuid = UUID.fromString(p.getUuid());
+            System.out.println("AFTER LOAD "+p.getUuid());
             xml.close();
             fis.close();
             System.out.println("Loaded.");
@@ -388,7 +397,7 @@ public class MultiplayerGameState extends State {
         try {
             client = new Client();
             client.start();
-            client.connect(1000, IP_ADDR, 54555, 54777);
+            client.connect(1000, IP_ADDR, PORT, PORT_UDP);
             client.close();
             return true;
         } catch (IOException e) {

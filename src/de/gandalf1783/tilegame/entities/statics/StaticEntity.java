@@ -17,6 +17,10 @@ public abstract class StaticEntity extends Entity {
 		this.solid = solid;
 	}
 
+	public void setEID(int EID) {
+		Entity.entityClasses[EID] = this.getClass();
+	}
+
 	public void hurt(int amt) {
 		super.hurt(amt);
 	}

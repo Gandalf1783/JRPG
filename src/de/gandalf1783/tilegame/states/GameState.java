@@ -5,6 +5,7 @@ import java.awt.*;
 import de.gandalf1783.tilegame.Handler;
 import de.gandalf1783.tilegame.gfx.Assets;
 import de.gandalf1783.tilegame.gfx.Text;
+import de.gandalf1783.tilegame.world.Generation;
 import de.gandalf1783.tilegame.world.World;
 
 public class GameState extends State {
@@ -21,6 +22,7 @@ public class GameState extends State {
 
 	private void init() {
 		world = new World(handler);
+		world.setSeed(Generation.SEED);
 		world.getNewMap();
 
 		handler.setWorld(world);
@@ -45,7 +47,6 @@ public class GameState extends State {
 	@Override
 	public void render(Graphics g) {
 		world.render(g);
-
 
 		if(displayDebug) {
 			int x = (int) world.getEntityManager().getPlayer().getX();

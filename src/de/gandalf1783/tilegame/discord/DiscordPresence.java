@@ -5,6 +5,7 @@ import net.arikia.dev.drpc.DiscordRPC;
 import net.arikia.dev.drpc.DiscordRichPresence;
 import net.arikia.dev.drpc.DiscordUser;
 
+import java.io.FileNotFoundException;
 import java.util.Random;
 
 public class DiscordPresence {
@@ -13,50 +14,67 @@ public class DiscordPresence {
     private static DiscordRichPresence presence;
 
     public static void init() {
-         handlers = new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
-            System.out.println("Welcome " + user.username + "#" + user.discriminator + "!");
-        })
+        try {
+            handlers = new DiscordEventHandlers.Builder().setReadyEventHandler((user) -> {
+                System.out.println("Welcome " + user.username + "#" + user.discriminator + "!");
+            })
 
 
-                 .setJoinGameEventHandler((String str ) -> {
-                     System.out.println("Game Event: "+str);
-                 })
-                 .setJoinRequestEventHandler((DiscordUser user) -> {
-                     System.out.println("JOINREQUEST!");
-                     System.out.println("Player wanna join! "+user.username+" | "+user.userId);
-                 })
-                 .build();
+                    .setJoinGameEventHandler((String str ) -> {
+                        System.out.println("Game Event: "+str);
+                    })
+                    .setJoinRequestEventHandler((DiscordUser user) -> {
+                        System.out.println("JOINREQUEST!");
+                        System.out.println("Player wanna join! "+user.username+" | "+user.userId);
+                    })
+                    .build();
 
-        DiscordRPC.discordInitialize("854465969397432380", handlers,true);
+            DiscordRPC.discordInitialize("854465969397432380", handlers,true);
 
-        presence = new DiscordRichPresence.Builder("Initialising...").build();
-        presence.largeImageKey = "background";
-        DiscordRPC.discordUpdatePresence(presence);
+            presence = new DiscordRichPresence.Builder("Initialising...").build();
+            presence.largeImageKey = "background";
+            presence.startTimestamp = System.currentTimeMillis(); // Bootup Time (elapsed gaming time)
+            DiscordRPC.discordUpdatePresence(presence);
 
-        new Thread(() -> { // Lambda Expression
-            while (true) {
-                DiscordRPC.discordRunCallbacks();
-                try {
-                    Thread.sleep(500);
-                } catch(Exception e) {
-                    e.printStackTrace();
+
+
+            new Thread(() -> { // Lambda Expression
+                while (true) {
+                    DiscordRPC.discordRunCallbacks();
+                    try {
+                        Thread.sleep(500);
+                    } catch(Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        }).start();
+            }).start();
+        } catch (UnsatisfiedLinkError e) {
+
+        } catch (NoClassDefFoundError e) {
+        }
     }
 
 
 
     public static void updatePresence(String str1, String str2) {
-        presence.state = str1;
-        presence.details = str2;
-        DiscordRPC.discordUpdatePresence(presence);
+        try {
+            presence.state = str1;
+            presence.details = str2;
+
+            DiscordRPC.discordUpdatePresence(presence);
+        } catch (NullPointerException e) {
+
+        }
     }
 
     public static void updateMultiplayerNumbers(int current, int max)  {
-        presence.partySize = current;
-        presence.partyMax = max;
-        DiscordRPC.discordUpdatePresence(presence);
+        try {
+            presence.partySize = current;
+            presence.partyMax = max;
+
+            DiscordRPC.discordUpdatePresence(presence);
+        } catch (NullPointerException e) {
+        }
     }
 
     public static void addMultiplayerKey(String str1, String str2) {

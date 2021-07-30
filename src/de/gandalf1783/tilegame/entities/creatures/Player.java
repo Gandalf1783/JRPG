@@ -32,7 +32,7 @@ public class Player extends Creature {
 		bounds.width = 19;
 		bounds.height = 19;
 
-		rect = new de.gandalf1783.quadtree.Rectangle(x,y,19,19);
+		rect = new de.gandalf1783.quadtree.Rectangle(x,y,DEFAULT_CREATURE_WIDTH,DEFAULT_CREATURE_HEIGHT);
 
 		//Animatons
 		animDown = new Animation(50, Assets.player_down, true);
@@ -276,6 +276,7 @@ public class Player extends Creature {
 	}
 
 	public de.gandalf1783.quadtree.Rectangle getRect() {
+		rect = new de.gandalf1783.quadtree.Rectangle(x,y,DEFAULT_CREATURE_WIDTH,DEFAULT_CREATURE_HEIGHT);
 		return rect;
 	}
 

@@ -1,128 +1,229 @@
 package de.gandalf1783.tilegame.inventory;
 
-import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import de.gandalf1783.tilegame.Handler;
 import de.gandalf1783.tilegame.gfx.Assets;
-import de.gandalf1783.tilegame.gfx.Text;
 import de.gandalf1783.tilegame.items.Item;
 import de.gandalf1783.tilegame.states.MultiplayerGameState;
 import de.gandalf1783.tilegame.objects.BasicRequest;
+import de.gandalf1783.tilegame.states.State;
+import de.gandalf1783.tilegame.ui.UIImageButton;
+import de.gandalf1783.tilegame.ui.UIManager;
 
 public class Inventory {
 
 	private Handler handler;
+	private UIManager uiManager;
+	private UIManager oldUiManager;
+
 	private boolean active = false;
-	private ArrayList<Item> inventoryItems;
-	
-	private int invX = 64, invY = 48,
-			invWidth = 512, invHeight = 384,
-			invListCenterX = invX + 171,
-			invListCenterY = invY + invHeight / 2 + 5,
-			invListSpacing = 30;
-	
-	private int invImageX = 452, invImageY = 82,
-			invImageWidth = 64, invImageHeight = 64;
-	
-	private int invCountX = 484, invCountY = 172;
-	
-	private int selectedItem = 0;
+
+	private Item[][] items = new Item[5][3];
+
+	private int invX = 180, invY = 60,
+			invWidth = 120, invHeight = 138;
+
+	private int zoomFactor = 3;
+
+	private int selectedSlotX = 0, selectedSlotY = 0;
+	private int selectedTab = 0;
 	
 	public Inventory(Handler handler){
 		this.handler = handler;
-		inventoryItems = new ArrayList<Item>();
+
+		uiManager = new UIManager(handler);
+
+		Item.woodItem.setCount(2);
+		Item.cactusItem.setCount(2);
+		Item.signItem201.setCount(2);
+
+		items[0] = new Item[3];
+		items[1] = new Item[3];
+		items[2] = new Item[3];
+		items[3] = new Item[3];
+		items[4] = new Item[3];
+
+		items[0][2] = Item.signItem201;
+		items[1][1] = Item.cactusItem;
+		items[2][1] = Item.woodItem;
+
 	}
-	
+
 	public void tick(){
-		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_E))
+		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_E)) {
+			if (!active) {
+				uiManager = new UIManager(handler);
+
+				oldUiManager = handler.getMouseManager().getUiManager();
+
+				selectedSlotX = -1;
+				selectedSlotY = -1;
+
+				rebuildInventoryUiManager();
+				handler.getMouseManager().setUIManager(uiManager);
+			}
+			if(active)
+				handler.getMouseManager().setUIManager(oldUiManager);
 			active = !active;
+		}
 		if(!active)
 			return;
-		
+
+		uiManager.tick();
+
+		/*
+			TODO: Tab Handling!
 		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_W))
-			selectedItem--;
+			if(selectedTab > 0)
+				selectedTab--;
 		if(handler.getKeyManager().keyJustPressed(KeyEvent.VK_S))
-			selectedItem++;
-		
-		if(selectedItem < 0)
-			selectedItem = 0;
-		else if(selectedItem >= inventoryItems.size())
-			selectedItem = 0;
+			if(selectedTab < 3)
+				selectedTab++;
+		 */
 	}
 	
 	public void render(Graphics g){
 		if(!active)
 			return;
-		
-		g.drawImage(Assets.inventoryScreen, invX, invY, invWidth, invHeight, null);
-		
-		int len = inventoryItems.size();
-		if(len == 0)
-			return;
-		
-		for(int i = -5;i < 6;i++){
-			if(selectedItem + i < 0 || selectedItem + i >= len)
-				continue;
-			if(i == 0){
-				Text.drawString(g, "> " + inventoryItems.get(selectedItem + i).getName() + " <", invListCenterX,
-						invListCenterY + i * invListSpacing, true, Color.YELLOW, Assets.font28);
-			}else{
-				Text.drawString(g, inventoryItems.get(selectedItem + i).getName(), invListCenterX, 
-						invListCenterY + i * invListSpacing, true, Color.WHITE, Assets.font28);
-			}
+
+		g.drawImage(Assets.inventoryScreen, invX, invY, invWidth*zoomFactor, invHeight*zoomFactor, null);
+
+		g.drawImage(Assets.inventoryActiveTab, invX+101*3, invY+38*3+(selectedTab*18*zoomFactor), 17*3, 19*3, null); // TODO: Active Tab (Click on it by Mouse -> UIObject!)
+
+		if(selectedSlotX >= 0 && selectedSlotY >= 0) {
+			g.drawImage(Assets.inventoryActiveItem,invX +(11*zoomFactor)+(17*zoomFactor*selectedSlotX), invY+(44*zoomFactor)+(17*zoomFactor*selectedSlotY),14*zoomFactor, 14*zoomFactor, null);
 		}
-		
-		Item item = inventoryItems.get(selectedItem);
-		g.drawImage(item.getTexture(), invImageX, invImageY, invImageWidth, invImageHeight, null);
-		Text.drawString(g, item.getCount()+"", invCountX, invCountY, true, Color.WHITE, Assets.font28);
+
+		uiManager.render(g);
 	}
-	
+
+
+	private void rebuildInventoryUiManager() {
+		uiManager.getObjects().clear();
+
+		uiManager.addObject(new UIImageButton(invX+(96*zoomFactor), invY+(0*zoomFactor),  25*zoomFactor, 33*zoomFactor ,Assets.emptyImages, () -> {
+			handler.getMouseManager().setUIManager(oldUiManager);
+			active = false;
+		}));
+
+		uiManager.addObject(new UIImageButton(invX+(72*zoomFactor), invY+(114*zoomFactor),  25*zoomFactor, 33*zoomFactor ,Assets.emptyImages, () -> {
+			dropItem();
+		}));
+
+		int slotX = 0, slotY = 0;
+
+		for(Item[] i1 : items) {
+			for(Item i : i1) {
+
+				int finalSlotX = slotX;
+				int finalSlotY = slotY;
+
+				if(i == null) {
+
+					uiManager.addObject(new UIImageButton(invX +(11*zoomFactor)+(17*zoomFactor*slotX), invY+(44*zoomFactor)+(17*zoomFactor*slotY), 12*zoomFactor, 12*zoomFactor, Assets.emptyImage, () -> {
+
+						if(selectedSlotX >= 0 && selectedSlotY >= 0) {
+
+							items[finalSlotX][finalSlotY] = items[selectedSlotX][selectedSlotY];
+							items[selectedSlotX][selectedSlotY] = null;
+
+							selectedSlotX = -1;
+							selectedSlotY = -1;
+
+							rebuildInventoryUiManager();
+							System.out.println("Moving Item");
+
+						}
+					}, false));
+
+					slotY++;
+					continue;
+				}
+
+
+				uiManager.addObject(new UIImageButton(invX +(11*zoomFactor)+(17*zoomFactor*slotX), invY+(44*zoomFactor)+(17*zoomFactor*slotY), 12*zoomFactor, 12*zoomFactor, i.getTexture(), () -> {
+
+					if(selectedSlotX == finalSlotX && selectedSlotY == finalSlotY) {
+						selectedSlotX = -1;
+						selectedSlotY = -1;
+					} else {
+						if(selectedSlotX != -1 && selectedSlotY != -1 ) {
+							if(items[selectedSlotX][selectedSlotY] != null) {
+								Item itemA = items[selectedSlotX][selectedSlotY];
+								Item itemB = items[finalSlotX][finalSlotY];
+								items[finalSlotX][finalSlotY] = itemA;
+								items[selectedSlotX][selectedSlotY] = itemB;
+								selectedSlotX = -1;
+								selectedSlotY = -1;
+								rebuildInventoryUiManager();
+							}
+						} else {
+							selectedSlotX = finalSlotX;
+							selectedSlotY = finalSlotY;
+						}
+					}
+
+					System.out.println("Selection: "+selectedSlotX+"|"+selectedSlotY);
+				}, false));
+
+				slotY++;
+
+			}
+
+			slotY = 0;
+			slotX++;
+
+		}
+	}
+
 	// Inventory methods
-	
 	public void addItem(Item item){
 		System.out.println("Trying to add "+item.getCount()+"x of "+ item.getName());
+		int indexX = 0, indexY = 0;
 
-		for(Item i : inventoryItems) {
-			if(i.getId() == item.getId() && i.getName().equalsIgnoreCase(item.getName())) {
-				i.setCount(i.getCount() + item.getCount());
-				return;
+		for(Item[] i1 : items) {
+			for(Item i : i1) {
+				if(i == null) {
+					items[indexX][indexY] = item;
+					return;
+				} else {
+					indexY++;
+				}
 			}
+			indexY = 0;
+			indexX++;
 		}
-		inventoryItems.add(item);
 	}
 
 	public void dropItem() {
+		if (State.getState() == handler.getGame().multiplayerGameState) {
 
-		if (inventoryItems.size() <= selectedItem) {
-			return;
-		}
-
-		if (MultiplayerGameState.isConnected()) {
 			BasicRequest request = new BasicRequest();
+
 			request.text = "DROP";
-			request.data = selectedItem + "";
-			System.out.println("SELECTED ITEM: " + selectedItem);
+			request.data = selectedSlotX+"#"+selectedSlotY;
+
+			System.out.println("SELECTED ITEM: " + selectedSlotX+"#"+selectedSlotY);
+
 			MultiplayerGameState.getClient().sendTCP(request);
+
 		} else {
-			int count = inventoryItems.get(selectedItem).getCount();
-			if (count <= 0) {
-				inventoryItems.remove(selectedItem);
+
+			int count = items[selectedSlotX][selectedSlotY].getCount();
+
+			if (count-1 <= 0) {
+				items[selectedSlotX][selectedSlotY] = null;
 				return;
 			}
 
-			inventoryItems.get(selectedItem).setCount(count - 1);
-		}
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e) {
+			items[selectedSlotX][selectedSlotY].setCount(count - 1);
 		}
 	}
 
 	// GETTERS SETTERS
-
 	public Handler getHandler() {
 		return handler;
 	}
@@ -133,16 +234,5 @@ public class Inventory {
 
 	public boolean isActive() {
 		return active;
-	}
-
-	public Item getSelectedItem() {
-		return inventoryItems.get(selectedItem);
-	}
-
-	public int getSelectedIndex() {
-		return selectedItem;
-	}
-	public int getInvSize() {
-		return inventoryItems.size();
 	}
 }

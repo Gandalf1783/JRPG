@@ -16,6 +16,8 @@ public class PlayerAddExecutor extends BasicResponseExecutor{
 
     @Override
     public void execute(BasicResponse resp, Handler handler) {
+        System.out.println("Creating new Player....");
+
         String data = resp.data;
         String[] dataArray = data.split("#");
         System.out.println(data);

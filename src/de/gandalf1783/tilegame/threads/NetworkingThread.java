@@ -29,7 +29,9 @@ public class NetworkingThread implements Runnable {
                 float yMove = handler.getWorld().getEntityManager().getPlayer().getyMove();
                 pos.setDirection(handler.getWorld().getEntityManager().getPlayer().getDirection(xMove, yMove));
                 pos.setDimensionID(MultiplayerGameState.getDimensionID());
-                client.sendUDP(pos);
+
+                client.sendTCP(pos);
+                client.updateReturnTripTime();
 
                 try {
                     Thread.sleep(5);
